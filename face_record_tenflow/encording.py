@@ -60,4 +60,5 @@ print(f"Saving encodings to file: {ENCODINGS_OUTPUT_FILE}")
 with open(ENCODINGS_OUTPUT_FILE, "wb") as f:
     pickle.dump({"encodings": known_encodings, "names": known_names}, f)
 
+
 print("\n🎉 All done! Encodings have been saved successfully.")

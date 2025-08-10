@@ -1,4 +1,8 @@
-import face_recognition
+import face_recognition # python ต้องใช้เวอร์ชั่น 3.10 นะถึงจะโหลดติดตั้งง่าย 
+# pip install dlip 
+# pip install cmake ถ้าไม่ได้ต้องไปโหลดใน google
+# pip install face_recognition  
+
 import os
 import pickle
 import numpy as np
@@ -59,5 +63,6 @@ for person_name in os.listdir(TRAIN_DATA_DIR):
 print(f"Saving encodings to file: {ENCODINGS_OUTPUT_FILE}")
 with open(ENCODINGS_OUTPUT_FILE, "wb") as f:
     pickle.dump({"encodings": known_encodings, "names": known_names}, f)
+
 
 print("\n🎉 All done! Encodings have been saved successfully.")

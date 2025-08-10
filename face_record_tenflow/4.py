@@ -1,16 +1,18 @@
-import cv2
+import cv2 # pip install opencv-python
 import os
-import numpy as np
+import numpy as np # pip install numpy
 import pickle
 import shutil
-from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.models import Sequential, load_model
+from sklearn.preprocessing import LabelEncoder # pip install scikit-learn
+from tensorflow.keras.models import Sequential, load_model # pip install tensorflow
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.optimizers import Adam
 
+# โหลดทั้งหมด pip install opencv-python numpy scikit-learn tensorflow
+
 # --- Global Settings ---
-dataset_path = 'dataset'
+dataset_path = 'dataset' #ใส่ path โฟลเดอร์ที่ต้องการ
 camera_index = 0
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 img_size = (200, 200)

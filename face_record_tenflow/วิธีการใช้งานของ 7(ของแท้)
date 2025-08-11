@@ -1,0 +1,140 @@
+โปรเจกต์นี้เป็นระบบตรวจจับและจดจำใบหน้าที่มีการยืนยันตัวตนแบบ "ลืมตากะพริบตา" (liveness detection) โดยใช้
+
+* MTCNN สำหรับตรวจจับใบหน้า
+* FaceNet สำหรับแปลงใบหน้าเป็น embeddings
+* MediaPipe Face Mesh สำหรับตรวจจับ landmark ตา เพื่อคำนวณ Eye Aspect Ratio (EAR) ใช้ตรวจจับการกะพริบตา
+* CLAHE สำหรับปรับแสงในภาพเพื่อเพิ่มความแม่นยำในการจดจำ
+
+---
+
+## 1. การติดตั้ง (Installation)
+
+### 1.1 เตรียม Python (แนะนำ Python 3.7+)
+
+* แนะนำให้ใช้ [Python 3.7 หรือใหม่กว่า](https://www.python.org/downloads/)
+
+### 1.2 สร้าง virtual environment (แนะนำ)
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
+### 1.3 ติดตั้งไลบรารีที่จำเป็น
+
+```bash
+pip install opencv-python
+pip install numpy
+pip install tensorflow
+pip install keras-facenet
+pip install mtcnn
+pip install mediapipe
+pip install scipy
+```
+
+> **หมายเหตุ:**
+>
+> * ถ้าติดตั้ง `tensorflow` ลำบาก ให้ติดตั้งเวอร์ชันที่เหมาะกับระบบ เช่น `tensorflow-cpu`
+> * สำหรับ MediaPipe อาจใช้เวลานานในการติดตั้ง
+
+---
+
+## 2. วิธีใช้งาน (Usage)
+
+### 2.1 รันโปรแกรม
+
+```bash
+python your_script_name.py
+```
+
+### 2.2 เมนูหลัก
+
+เมื่อรันโปรแกรมจะมีเมนูให้เลือกดังนี้:
+
+| ตัวเลือก | คำอธิบาย                                                                 |
+| -------- | ------------------------------------------------------------------------ |
+| 1        | ถ่ายภาพใบหน้าของบุคคลใหม่เพื่อเพิ่มเข้า dataset                          |
+| 2        | สร้าง embeddings จากภาพใน dataset (ต้องทำหลังถ่ายภาพเสร็จ)               |
+| 3        | เริ่มระบบจดจำใบหน้าแบบมีการตรวจจับการกะพริบตา (ลักษณะการ live detection) |
+| 4        | แสดงรายชื่อบุคคลที่อยู่ใน dataset                                        |
+| 5        | ลบข้อมูลบุคคลจาก dataset                                                 |
+| 6        | ออกจากโปรแกรม                                                            |
+
+---
+
+### 2.3 รายละเอียดแต่ละฟังก์ชัน
+
+#### 2.3.1 บันทึกภาพใบหน้า (Option 1)
+
+* ใส่ชื่อคน (ภาษาอังกฤษ ไม่มีเว้นวรรค)
+* โปรแกรมจะเปิดกล้องและจับภาพใบหน้า 50 ภาพ
+* ใช้ MTCNN ตรวจจับใบหน้าและตัดส่วนใบหน้าออกมาเก็บในโฟลเดอร์ `dataset/ชื่อคน`
+
+#### 2.3.2 สร้าง Face Embeddings (Option 2)
+
+* โปรแกรมจะประมวลผลภาพใน `dataset` ทั้งหมด
+* ใช้ FaceNet สร้าง embeddings แล้วเก็บในไฟล์ `face_embeddings.pkl`
+
+#### 2.3.3 เริ่มระบบจดจำ (Option 3)
+
+* เปิดกล้องและตรวจจับใบหน้า
+* ใช้ MediaPipe Face Mesh คำนวณ Eye Aspect Ratio เพื่อตรวจจับกะพริบตา (ลักษณะ liveness)
+* ถ้าผู้ใช้กะพริบตา ระบบจะจดจำใบหน้าว่าเป็นใครโดยเทียบกับ embeddings ที่มีในระบบ
+* แสดงชื่อและความแม่นยำบนหน้าจอ
+
+#### 2.3.4 แสดงรายชื่อบุคคล (Option 4)
+
+* แสดงรายชื่อโฟลเดอร์ใน `dataset` ที่บันทึกภาพไว้
+
+#### 2.3.5 ลบข้อมูลบุคคล (Option 5)
+
+* เลือกหมายเลขบุคคลที่ต้องการลบ
+* ยืนยันการลบข้อมูลทั้งหมดในโฟลเดอร์ของคนนั้น
+
+---
+
+## 3. หมายเหตุสำคัญ
+
+* **กล้องต้องเชื่อมต่อและใช้งานได้**
+* ถ้ารัน Option 3 แล้วพบปัญหาเปิดกล้องไม่ได้ หรือไม่เห็นใบหน้า ให้ตรวจสอบกล้องและสิทธิ์การเข้าถึง
+* ควรถ่ายภาพหลายมุมและสภาพแสงต่างๆ เพื่อเพิ่มความแม่นยำ
+* ควรสร้าง embeddings ทุกครั้งหลังเพิ่มหรือลบข้อมูลบุคคล
+
+---
+
+## 4. ตัวอย่างการใช้งาน
+
+```
+$ python face_recognition_secure.py
+
+==============================
+   Secure Face Recognition System
+==============================
+1. Capture new faces
+2. Generate Face Embeddings
+3. Start secure recognition
+4. Show persons in database
+5. Delete a person's data
+6. Exit
+Enter your choice (1-6): 1
+
+Enter person's name (English, no spaces): john_doe
+Look at the camera. Press 'q' to quit.
+Saved: 1/50
+...
+Finished capturing 50 images for 'john_doe'.
+
+Enter your choice (1-6): 2
+
+Generating Face Embeddings...
+✅ Embeddings generated and saved to 'face_embeddings.pkl'.
+
+Enter your choice (1-6): 3
+
+Starting secure recognition (using FaceNet). Please blink to verify.
+...
+john_doe (0.85)
+```
+
+---
